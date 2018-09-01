@@ -14,31 +14,27 @@ github.com/wisehackermonkey
 //show
 
 var character;
-var item;
+var bullet;
 
 
 function setup() {
   createCanvas(600,600);
   background(50);
+  
+  // bullet = new Bullet(100,100,90);
+
   angleMode(DEGREES);
+  ellipseMode(CENTER);
+  rectMode(CENTER);
   character = new Character(width/2, height/2);
-  item = new Item(width/3, height/2);
- 
+
 }
 
 function draw() { 
   background(50);
-  item.show();
-  character.show(item);
-// character.check(item);
+  character.show();
   character.move();
   
-  for(var i = 0; i <= lasers.length -1; i+=1){
-		if(lasers[i].visable === true){
-			lasers[i].show();
-			lasers[i].update();
-		}
-	}
 }
 
 
@@ -49,12 +45,7 @@ function Character(x,y){
 	this.h = 10;
 	this.colid;
 	
-	this.show = function(t){
-	 // if(collideRectRect(this.loc.x,this.loc.y, this.w,this.h, t.loc.x, t.loc.y, t.h, t.w)){
-	 //   fill(color("green"));
-	 // }else{
-	 //   fill(color("white"));
-	 // }
+	this.show = function(){
 		if(this.visable){
 			rect(this.loc.x,this.loc.y, this.w,this.h);
 		}
@@ -73,23 +64,8 @@ function Character(x,y){
 		if(keyIsDown(DOWN_ARROW)){
 		  this.loc.y += 1;
 		}
-		
 	}
 	
-	this.check = function(t){
-  // return 
-  }
 }
 
-function Item(x,y){
-  this.visable = true;
-	this.loc  = createVector(x,y);
-	this.w = 10;
-	this.h = 10;
-	
-	this.show = function(){
-		if(this.visable){
-			rect(this.loc.x,this.loc.y, this.w,this.h);
-		}
-	}
-}
+
