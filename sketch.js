@@ -15,23 +15,30 @@ github.com/wisehackermonkey
 
 var character;
 var item;
-var fx;
+
 
 function setup() {
   createCanvas(600,600);
   background(50);
+  angleMode(DEGREES);
   character = new Character(width/2, height/2);
   item = new Item(width/3, height/2);
  
 }
 
-function draw() {
+function draw() { 
+  background(50);
   item.show();
-  character.show();
- 
+  character.show(item);
+// character.check(item);
   character.move();
   
-  // character.check(item);
+  for(var i = 0; i <= lasers.length -1; i+=1){
+		if(lasers[i].visable === true){
+			lasers[i].show();
+			lasers[i].update();
+		}
+	}
 }
 
 
@@ -42,10 +49,12 @@ function Character(x,y){
 	this.h = 10;
 	this.colid;
 	
-	this.show = function(){
-	  if(this.colid){
-	    fill(color("green"));
-	  }
+	this.show = function(t){
+	 // if(collideRectRect(this.loc.x,this.loc.y, this.w,this.h, t.loc.x, t.loc.y, t.h, t.w)){
+	 //   fill(color("green"));
+	 // }else{
+	 //   fill(color("white"));
+	 // }
 		if(this.visable){
 			rect(this.loc.x,this.loc.y, this.w,this.h);
 		}
@@ -67,9 +76,9 @@ function Character(x,y){
 		
 	}
 	
-// 	this.check = function(t){
-//   return collideRectRect(this.loc.x,this.loc.y, this.w,this.h, t.loc.x, t.loc.y, t.h, t.w);
-//   }
+	this.check = function(t){
+  // return 
+  }
 }
 
 function Item(x,y){
@@ -84,9 +93,3 @@ function Item(x,y){
 		}
 	}
 }
-
-// function Fx(){
-//   this.check = function(a,b){
-//   return collideRectRect(a.loc.x,a.loc.y, a.w,a.h, b.loc.x, b.loc.y, b.h, b.w);
-//   }
-// }
