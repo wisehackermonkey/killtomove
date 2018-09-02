@@ -8,15 +8,23 @@ github.com/wisehackermonkey
 
 */
 //todo
-//update
-//move
-//draw
-//show
+//updatex
+//movex
+//drawx
+//showx
+//fix bullet angle when fired
+//bound to screen
+
+//add screen shake
+//add title screen
+//
 
 var character;
 var bullet;
 var enemy;
 var bulletTarget;
+var moveVal = 0;
+
 
 function setup() {
   createCanvas(600,600);
@@ -44,7 +52,7 @@ function draw() {
   enemy.colid(character);
   enemy.colid(bullet);
   fill(color("red"));
-  text("Desplay",10,40);
+  text("Desplay:"+moveVal,10,40);
   fill(color("white"));
 }
 
@@ -99,6 +107,7 @@ function Character(x,y){
   }
 }
 
+
 function Enemy(x,y){
  	this.loc = createVector(x,y);
 	this.vel = createVector(0,0);
@@ -118,6 +127,7 @@ function Enemy(x,y){
 	    	this.visable = false;
 	    	bullet.visable = false;
 	    	// print("colid");
+	    	
 	  }
 	  
 	}
@@ -134,7 +144,6 @@ function Enemy(x,y){
 	  
 	}
 }
-
 
 
 function Bullet(x,y){
@@ -165,7 +174,6 @@ function Bullet(x,y){
   }
   this.reachTarget = function(t){
 	  if(collideRectRect(t.x,t.y,10,10,this.loc.x, this.loc.y,this.h,this.w)){
-	    	// print("bullet target aquired");
 	    	this.visable = false;
 	    	bulletTarget = createVector(-10,-10);
 	  }
