@@ -37,6 +37,7 @@ var enemy_sheet_image;
 var enemy_sheet;
 var enemy_animation;
 var enemy_walk;
+var ememy_img;
 
 var menu;
 var bg;
@@ -63,21 +64,21 @@ var enemy_walk   = [
   {'name':'player_walk01', 'frame':{'x':64*1, 'y': 64*1, 'width': 64, 'height': 64}},
   {'name':'player_walk02', 'frame':{'x':64*2, 'y': 64*1, 'width': 64, 'height': 64}},
   {'name':'player_walk03', 'frame':{'x':64*3, 'y': 64*1, 'width': 64, 'height': 64}},
-  {'name':'player_walk04', 'frame':{'x':64*1, 'y': 64*2, 'width': 64, 'height': 64}},
-  {'name':'player_walk05', 'frame':{'x':64*2, 'y': 64*2, 'width': 64, 'height': 64}},
+  {'name':'player_walk04', 'frame':{'x':64*4, 'y': 64*1, 'width': 64, 'height': 64}},
+  {'name':'player_walk05', 'frame':{'x':64*5, 'y': 64*1, 'width': 64, 'height': 64}},
 ];
 function preload(){
   menu = loadImage("./img/menu2.png"); 
   bg = loadImage("./img/bg_2_3.png");
   font = loadFont("./Techno.ttf");
   fontScore = loadFont("./3X5.TTF");
-  
+  ememy_img = loadImage("./img/golem-walk.png");
   player_sprite_sheet = loadSpriteSheet('character_2.png', front_walk);
   walkLeft = loadAnimation(player_sprite_sheet);
   player_sprite = createSprite(100, 284, 10, 20);
   player_sprite.addAnimation('walk', walkLeft);
-  player.scale = 2;
-  enemy_sheet_image = loadSpriteSheet('./img/spider2_2.png', enemy_walk);
+  player_sprite.scale = 2.5;
+  enemy_sheet_image = loadSpriteSheet('./img/golem-walk.png', enemy_walk);
   enemy_walk = loadAnimation(enemy_sheet_image);
   // enemy_sprite = createSprite(300,100, 64, 64);
   // enemy_sprite.addAnimation('ohm_walk', enemy_walk);
@@ -134,8 +135,8 @@ function Character(x,y){
 	this.loc  = createVector(x,y);
 	this.vel = createVector(0,0);
 	this.acc = createVector(0,0);
-	this.w = 20;
-	this.h = 10;
+	this.w = 30;
+	this.h = 20;
   this.canMove = true;
 	this.moves = 0;
 	
@@ -143,7 +144,7 @@ function Character(x,y){
 		if(this.visable){
 		  colorMode(HSL);
 		  fill(map(this.moves,0,200,0,120), 100, 50);
-			ellipse(this.loc.x,this.loc.y+5, this.w,this.h);
+		// 	ellipse(this.loc.x,this.loc.y+20, this.w,this.h);
 			
 			colorMode(RGB);
 			fill(255);
@@ -199,14 +200,15 @@ function Enemy(x,y){
  	this.loc = createVector(x,y);
 	this.vel = createVector(0,0);
 	this.acc = createVector(0,0);
-	this.w = 10;
-	this.h = 10;
+	this.w = 64;
+	this.h = 64;
 	this.bullets = [];
 	this.visable = true;
 	this.hack = true;
 	this.show = function(){
 	  if(this.visable){
-  	  rect(this.loc.x,this.loc.y, this.w,this.h);
+  	 // rect(this.loc.x,this.loc.y, this.w,this.h);
+  	  image(ememy_img,this.loc.x,this.loc.y, this.w,this.h);
 	  }
 	}
 	this.colid = function(t){
@@ -241,8 +243,8 @@ function Bullet(x,y){
   this.loc = createVector(x,y);
   this.vel = createVector(0,0);
   this.acc = createVector(0,0);
-  this.w = 3;
-  this.h = 15;
+  this.w = 3*2;
+  this.h = 15*2;
   this.angle = 0;
   this.debug = true;
   this.visable = true;
@@ -267,7 +269,7 @@ function Bullet(x,y){
   this.reachTarget = function(t){
 	  if(collideRectRect(t.x,t.y,10,10,this.loc.x, this.loc.y,this.h,this.w)){
 	    	this.visable = false;
-	    	bulletTarget = createVector(-10,-10);
+	    	// bulletTarget = createVector(-10,-10);
 	  }
 	}
   this.debugShow = function(){
@@ -311,7 +313,7 @@ function characterBoost(){
 function mousePressed(){
   
   bullet.loc = character.loc.copy();
-  bulletTarget =createVector(mouseX,mouseY);
+  bulletTarget = createVector(mouseX,mouseY);
   bullet.visable = true;
 //   setTimeout(function (){
 //   character.canMove = !character.canMove;
