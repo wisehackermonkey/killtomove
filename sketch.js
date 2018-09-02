@@ -4,7 +4,8 @@ wisemonkey
 oranbusiness@gmail.com
 20180901
 github.com/wisehackermonkey
-
+ art cred go to 
+ https://opengameart.org/content/tiny-16-expanded-character-sprites
 
 */
 //todo
@@ -65,11 +66,15 @@ function Character(x,y){
 	this.w = 10;
 	this.h = 10;
   this.canMove = true;
-	this.timeEnd = 0;
+	this.moves = 200;
 	
 	this.show = function(){
 		if(this.visable){
+		  colorMode(HSL);
+		  fill(map(this.moves,0,200,0,120), 100, 50);
 			rect(this.loc.x,this.loc.y, this.w,this.h);
+			colorMode(RGB);
+			fill(255);
 		}
 	}
 	
@@ -78,18 +83,24 @@ function Character(x,y){
     var ahor = 0.1;
     this.vel.mult(0);
     this.acc.mult(0.85);
+    print("works");
     if(keyIsDown(RIGHT_ARROW)){
+      print(this.moves);
+      this.moves-=1;
       this.vel.add(createVector(vhor,0));
       this.acc.add(createVector(ahor,0));
     }else if(keyIsDown(LEFT_ARROW)){
+      this.moves-=1;
       this.vel.add(createVector(-vhor,0));
       this.acc.add(createVector(-ahor,0));
     }
+    
     if(keyIsDown(UP_ARROW)){
+      this.moves-=1;
       this.vel.add(createVector(0, -vhor));
       this.acc.add(createVector(0,-ahor));
     }else if(keyIsDown(DOWN_ARROW)){
-  
+      this.moves-=1;
       this.vel.add(createVector(0,vhor));
       this.acc.add(createVector(0,ahor));
       
@@ -97,13 +108,17 @@ function Character(x,y){
   }
   
   this.move = function(){
-    this.arrows();
+    print(this.moves);
+    if(this.moves >0 || this.moves == 200){
+      
+      this.arrows();
+    }else{
+      // this.arrows();
+      this.vel.mult(0);
+      this.acc.mult(0.85);
+    }
   	this.vel.add(this.acc);
   	this.loc.add(this.vel);
-  }
-  
-  this.stopMove = function(){
-    this.canMove = !this.canMove;
   }
 }
 
@@ -116,7 +131,7 @@ function Enemy(x,y){
 	this.h = 10;
 	this.bullets = [];
 	this.visable = true;
-	
+	this.hack = true;
 	this.show = function(){
 	  if(this.visable){
   	  rect(this.loc.x,this.loc.y, this.w,this.h);
@@ -128,6 +143,10 @@ function Enemy(x,y){
 	    	bullet.visable = false;
 	    	// print("colid");
 	    	
+	  }
+	  if(this.visable === false && this.hack === true){
+	    this.hack = false
+	    character.moves = 200;
 	  }
 	  
 	}
