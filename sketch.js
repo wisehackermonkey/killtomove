@@ -38,9 +38,13 @@ var enemy_sheet;
 var enemy_animation;
 var enemy_walk;
 
+var menu;
+var bg;
 
+var font;
+var fontScore;
 
-
+var size;
 
 var front_walk = [
   {'name':'player_walk01', 'frame':{'x':16*1, 'y': 0, 'width': 16, 'height': 16}},
@@ -63,22 +67,29 @@ var enemy_walk   = [
   {'name':'player_walk05', 'frame':{'x':64*2, 'y': 64*2, 'width': 64, 'height': 64}},
 ];
 function preload(){
+  menu = loadImage("./img/menu2.png"); 
+  bg = loadImage("./img/bg_2_3.png");
+  font = loadFont("./Techno.ttf");
+  fontScore = loadFont("./3X5.TTF");
   
-  // player_sprite_sheet = loadSpriteSheet('character_2.png', front_walk);
-  // walkLeft = loadAnimation(player_sprite_sheet);
+  player_sprite_sheet = loadSpriteSheet('character_2.png', front_walk);
+  walkLeft = loadAnimation(player_sprite_sheet);
   player_sprite = createSprite(100, 284, 10, 20);
-  // player_sprite.addAnimation('walk', walkLeft);
-  
-  enemy_sheet_image = loadSpriteSheet('./img/spider.png', enemy_walk);
+  player_sprite.addAnimation('walk', walkLeft);
+  player.scale = 2;
+  enemy_sheet_image = loadSpriteSheet('./img/spider2_2.png', enemy_walk);
   enemy_walk = loadAnimation(enemy_sheet_image);
-  enemy_sprite = createSprite(100, 284, 64, 64);
-  enemy_sprite.addAnimation('ohm_walk', enemy_walk);
+  // enemy_sprite = createSprite(300,100, 64, 64);
+  // enemy_sprite.addAnimation('ohm_walk', enemy_walk);
 }
 
 function setup() {
   createCanvas(600,600);
   background(50);
   noSmooth();
+  
+  
+  textFont(font,23);
   bullet = new Bullet(-10,-10,90);
   enemy = new Enemy(300,100);
  
@@ -92,7 +103,7 @@ function setup() {
 
 function draw() { 
   background(50);
-
+  image(bg,0,0,600,600);
   character.show();
   character.move();
   
@@ -103,10 +114,17 @@ function draw() {
   enemy.show();
   enemy.colid(character);
   enemy.colid(bullet);
-  fill(color("red"));
-  text("Desplay:"+moveVal,10,40);
-  fill(color("white"));
+  // animation(enemy_walk, enemy.loc.x, enemy.loc.y);
   drawSprites();
+  image(menu,0,0);
+  fill(color("red"));
+  textFont(font,23);
+  text("Kill To Move",16,35);
+  textFont(fontScore,27);
+  text(character.moves,507,43);
+  fill(color("white"));
+  print(`${mouseX},${mouseY}`);
+  
 
 }
 
@@ -119,7 +137,7 @@ function Character(x,y){
 	this.w = 20;
 	this.h = 10;
   this.canMove = true;
-	this.moves = 200;
+	this.moves = 0;
 	
 	this.show = function(){
 		if(this.visable){
@@ -163,7 +181,7 @@ function Character(x,y){
   
   this.move = function(){
     
-    if(this.moves > 0){
+    if(this.moves >= 1){
       
       this.arrows();
     }else{
