@@ -4,24 +4,59 @@ wisemonkey
 oranbusiness@gmail.com
 20180901
 github.com/wisehackermonkey
-
+ art cred go to 
+ https://opengameart.org/content/tiny-16-expanded-character-sprites
 
 */
 //todo
-//update
-//move
-//draw
-//show
+//updatex
+//movex
+//drawx
+//showx
+//fix bullet angle when fired
+//bound to screen
+
+//add screen shake
+//add title screen
+//
 
 var character;
 var bullet;
 var enemy;
 var bulletTarget;
+var moveVal = 0;
+
+var player_sprite;
+var sprite_sheet_image;
+var sprite_sheet;
+var explode_animation;
+var walkLeft;
+var front_walk = [
+  {'name':'player_walk01', 'frame':{'x':16*1, 'y': 0, 'width': 16, 'height': 16}},
+  {'name':'player_walk02', 'frame':{'x':16*2, 'y': 0, 'width': 16, 'height': 16}},
+  {'name':'player_walk03', 'frame':{'x':16*3, 'y': 0, 'width': 16, 'height': 16}},
+  {'name':'player_walk04', 'frame':{'x':16*3, 'y': 0, 'width': 16, 'height': 16}},
+];
+var side_walk   = [
+  {'name':'player_walk01', 'frame':{'x':16*1, 'y': 16*2, 'width': 16, 'height': 16}},
+  {'name':'player_walk02', 'frame':{'x':16*2, 'y': 16*2, 'width': 16, 'height': 16}},
+  {'name':'player_walk03', 'frame':{'x':16*3, 'y': 16*2, 'width': 16, 'height': 16}},
+  {'name':'player_walk04', 'frame':{'x':16*3, 'y': 16*2, 'width': 16, 'height': 16}},
+];
+function preload(){
+  sprite_sheet = loadSpriteSheet('character_2.png', 96, 160, 16);
+  explode_animation = loadAnimation(sprite_sheet);
+  
+  player_sprite_sheet = loadSpriteSheet('character_2.png', front_walk);
+  walkLeft = loadAnimation(player_sprite_sheet);
+  player_sprite = createSprite(100, 284, 70, 94);
+  player_sprite.addAnimation('walk', walkLeft);
+}
 
 function setup() {
   createCanvas(600,600);
   background(50);
-  
+  noSmooth();
   bullet = new Bullet(-10,-10,90);
   enemy = new Enemy(300,100);
  
@@ -30,11 +65,16 @@ function setup() {
   rectMode(CENTER);
   character = new Character(width/2, height/2);
   bulletTarget = createVector(-10,-10);
+  
 }
 
 function draw() { 
   background(50);
-  character.show();
+// clear();
+
+  // animate the sprite sheet
+  // animation(explode_animation, 100, 130);
+  // character.show();
   character.move();
   bullet.show();
   bullet.shoot(bulletTarget);
@@ -44,8 +84,10 @@ function draw() {
   enemy.colid(character);
   enemy.colid(bullet);
   fill(color("red"));
-  text("Desplay",10,40);
+  text("Desplay:"+moveVal,10,40);
   fill(color("white"));
+    drawSprites();
+
 }
 
 
@@ -57,11 +99,16 @@ function Character(x,y){
 	this.w = 10;
 	this.h = 10;
   this.canMove = true;
-	this.timeEnd = 0;
+	this.moves = 200;
 	
 	this.show = function(){
 		if(this.visable){
+		  colorMode(HSL);
+		  fill(map(this.moves,0,200,0,120), 100, 50);
 			rect(this.loc.x,this.loc.y, this.w,this.h);
+			player_sprite.position = this.loc;
+			colorMode(RGB);
+			fill(255);
 		}
 	}
 	
@@ -70,18 +117,24 @@ function Character(x,y){
     var ahor = 0.1;
     this.vel.mult(0);
     this.acc.mult(0.85);
+  
     if(keyIsDown(RIGHT_ARROW)){
+      print(this.moves);
+      this.moves-=1;
       this.vel.add(createVector(vhor,0));
       this.acc.add(createVector(ahor,0));
     }else if(keyIsDown(LEFT_ARROW)){
+      this.moves-=1;
       this.vel.add(createVector(-vhor,0));
       this.acc.add(createVector(-ahor,0));
     }
+    
     if(keyIsDown(UP_ARROW)){
+      this.moves-=1;
       this.vel.add(createVector(0, -vhor));
       this.acc.add(createVector(0,-ahor));
     }else if(keyIsDown(DOWN_ARROW)){
-  
+      this.moves-=1;
       this.vel.add(createVector(0,vhor));
       this.acc.add(createVector(0,ahor));
       
@@ -89,15 +142,19 @@ function Character(x,y){
   }
   
   this.move = function(){
-    this.arrows();
+    
+    if(this.moves > 0){
+      
+      this.arrows();
+    }else{
+      this.vel.mult(0);
+      this.acc.mult(0.85);
+    }
   	this.vel.add(this.acc);
   	this.loc.add(this.vel);
   }
-  
-  this.stopMove = function(){
-    this.canMove = !this.canMove;
-  }
 }
+
 
 function Enemy(x,y){
  	this.loc = createVector(x,y);
@@ -107,7 +164,7 @@ function Enemy(x,y){
 	this.h = 10;
 	this.bullets = [];
 	this.visable = true;
-	
+	this.hack = true;
 	this.show = function(){
 	  if(this.visable){
   	  rect(this.loc.x,this.loc.y, this.w,this.h);
@@ -118,6 +175,11 @@ function Enemy(x,y){
 	    	this.visable = false;
 	    	bullet.visable = false;
 	    	// print("colid");
+	    	
+	  }
+	  if(this.visable === false && this.hack === true){
+	    this.hack = false
+	    character.moves = 200;
 	  }
 	  
 	}
@@ -134,7 +196,6 @@ function Enemy(x,y){
 	  
 	}
 }
-
 
 
 function Bullet(x,y){
@@ -165,7 +226,6 @@ function Bullet(x,y){
   }
   this.reachTarget = function(t){
 	  if(collideRectRect(t.x,t.y,10,10,this.loc.x, this.loc.y,this.h,this.w)){
-	    	// print("bullet target aquired");
 	    	this.visable = false;
 	    	bulletTarget = createVector(-10,-10);
 	  }
