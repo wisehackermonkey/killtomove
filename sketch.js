@@ -18,7 +18,8 @@ github.com/wisehackermonkey
 
 //add screen shake
 //add title screen
-//
+//bullet explode
+//sound effects
 
 var character;
 var bullet;
@@ -29,13 +30,23 @@ var moveVal = 0;
 var player_sprite;
 var sprite_sheet_image;
 var sprite_sheet;
-var explode_animation;
 var walkLeft;
+
+var enemy_sprite;
+var enemy_sheet_image;
+var enemy_sheet;
+var enemy_animation;
+var enemy_walk;
+
+
+
+
+
 var front_walk = [
   {'name':'player_walk01', 'frame':{'x':16*1, 'y': 0, 'width': 16, 'height': 16}},
   {'name':'player_walk02', 'frame':{'x':16*2, 'y': 0, 'width': 16, 'height': 16}},
-  {'name':'player_walk03', 'frame':{'x':16*3, 'y': 0, 'width': 16, 'height': 16}},
-  {'name':'player_walk04', 'frame':{'x':16*3, 'y': 0, 'width': 16, 'height': 16}},
+  // {'name':'player_walk03', 'frame':{'x':16*3, 'y': 0, 'width': 16, 'height': 16}},
+  // {'name':'player_walk04', 'frame':{'x':16*3, 'y': 0, 'width': 16, 'height': 16}},
 ];
 var side_walk   = [
   {'name':'player_walk01', 'frame':{'x':16*1, 'y': 16*2, 'width': 16, 'height': 16}},
@@ -43,14 +54,25 @@ var side_walk   = [
   {'name':'player_walk03', 'frame':{'x':16*3, 'y': 16*2, 'width': 16, 'height': 16}},
   {'name':'player_walk04', 'frame':{'x':16*3, 'y': 16*2, 'width': 16, 'height': 16}},
 ];
+
+var enemy_walk   = [
+  {'name':'player_walk01', 'frame':{'x':64*1, 'y': 64*1, 'width': 64, 'height': 64}},
+  {'name':'player_walk02', 'frame':{'x':64*2, 'y': 64*1, 'width': 64, 'height': 64}},
+  {'name':'player_walk03', 'frame':{'x':64*3, 'y': 64*1, 'width': 64, 'height': 64}},
+  {'name':'player_walk04', 'frame':{'x':64*1, 'y': 64*2, 'width': 64, 'height': 64}},
+  {'name':'player_walk05', 'frame':{'x':64*2, 'y': 64*2, 'width': 64, 'height': 64}},
+];
 function preload(){
-  sprite_sheet = loadSpriteSheet('character_2.png', 96, 160, 16);
-  explode_animation = loadAnimation(sprite_sheet);
   
-  player_sprite_sheet = loadSpriteSheet('character_2.png', front_walk);
-  walkLeft = loadAnimation(player_sprite_sheet);
-  player_sprite = createSprite(100, 284, 70, 94);
-  player_sprite.addAnimation('walk', walkLeft);
+  // player_sprite_sheet = loadSpriteSheet('character_2.png', front_walk);
+  // walkLeft = loadAnimation(player_sprite_sheet);
+  player_sprite = createSprite(100, 284, 10, 20);
+  // player_sprite.addAnimation('walk', walkLeft);
+  
+  enemy_sheet_image = loadSpriteSheet('./img/spider.png', enemy_walk);
+  enemy_walk = loadAnimation(enemy_sheet_image);
+  enemy_sprite = createSprite(100, 284, 64, 64);
+  enemy_sprite.addAnimation('ohm_walk', enemy_walk);
 }
 
 function setup() {
@@ -70,10 +92,7 @@ function setup() {
 
 function draw() { 
   background(50);
-// clear();
 
-  // animate the sprite sheet
-  // animation(explode_animation, 100, 130);
   character.show();
   character.move();
   
@@ -87,7 +106,7 @@ function draw() {
   fill(color("red"));
   text("Desplay:"+moveVal,10,40);
   fill(color("white"));
-    drawSprites();
+  drawSprites();
 
 }
 
@@ -120,7 +139,7 @@ function Character(x,y){
     this.acc.mult(0.85);
   
     if(keyIsDown(RIGHT_ARROW)){
-      print(this.moves);
+      // print(this.moves);
       this.moves-=1;
       this.vel.add(createVector(vhor,0));
       this.acc.add(createVector(ahor,0));
