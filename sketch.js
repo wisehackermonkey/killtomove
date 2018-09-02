@@ -74,8 +74,9 @@ function draw() {
 
   // animate the sprite sheet
   // animation(explode_animation, 100, 130);
-  // character.show();
+  character.show();
   character.move();
+  
   bullet.show();
   bullet.shoot(bulletTarget);
   bullet.reachTarget(bulletTarget);
@@ -96,7 +97,7 @@ function Character(x,y){
 	this.loc  = createVector(x,y);
 	this.vel = createVector(0,0);
 	this.acc = createVector(0,0);
-	this.w = 10;
+	this.w = 20;
 	this.h = 10;
   this.canMove = true;
 	this.moves = 200;
@@ -105,8 +106,8 @@ function Character(x,y){
 		if(this.visable){
 		  colorMode(HSL);
 		  fill(map(this.moves,0,200,0,120), 100, 50);
-			rect(this.loc.x,this.loc.y, this.w,this.h);
-			player_sprite.position = this.loc;
+			ellipse(this.loc.x,this.loc.y+5, this.w,this.h);
+			
 			colorMode(RGB);
 			fill(255);
 		}
@@ -152,6 +153,7 @@ function Character(x,y){
     }
   	this.vel.add(this.acc);
   	this.loc.add(this.vel);
+  	player_sprite.position = this.loc.copy();
   }
 }
 
@@ -202,22 +204,23 @@ function Bullet(x,y){
   this.loc = createVector(x,y);
   this.vel = createVector(0,0);
   this.acc = createVector(0,0);
-  this.w = 5;
-  this.h = 20;
+  this.w = 3;
+  this.h = 15;
   this.angle = 0;
   this.debug = true;
   this.visable = true;
   
   this.show = function(){
     if(this.visable){
+      noStroke();
   	  push();
     	  translate(this.loc.x, this.loc.y);
       	rotate(this.vel.heading()+90);
     		ellipse(0,0,this.w,this.h);
   			fill(255,50,2,150);
-  			ellipse(random(-1.5,1.5),10, this.w,this.h);
+  			ellipse(random(-1.5,1.5),1*5, this.w,this.h);
   			fill(170,13,8,75);
-  			ellipse(random(-1.5,1.5),20, this.w,this.h);
+  			ellipse(random(-1.5,1.5),2*5, this.w,this.h);
   		pop();
     }
   }
