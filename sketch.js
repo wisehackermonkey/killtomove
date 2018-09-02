@@ -64,23 +64,35 @@ function Character(x,y){
 			rect(this.loc.x,this.loc.y, this.w,this.h);
 		}
 	}
-	this.move = function(){
-	  
-	  if(this.canMove){
-  		if(keyIsDown(RIGHT_ARROW)){
-  		  this.loc.x += 1;
-  		}
-  		if(keyIsDown(LEFT_ARROW)){
-  		  this.loc.x -= 1;
-  		}
-  		if(keyIsDown(UP_ARROW)){
-  		  this.loc.y -= 1;
-  		}
-  		if(keyIsDown(DOWN_ARROW)){
-  		  this.loc.y += 1;
-  		}
-	  }
-	}
+	
+  this.arrows = function(){
+    var vhor = 4;
+    var ahor = 0.1;
+    this.vel.mult(0);
+    this.acc.mult(0.85);
+    if(keyIsDown(RIGHT_ARROW)){
+      this.vel.add(createVector(vhor,0));
+      this.acc.add(createVector(ahor,0));
+    }else if(keyIsDown(LEFT_ARROW)){
+      this.vel.add(createVector(-vhor,0));
+      this.acc.add(createVector(-ahor,0));
+    }
+    if(keyIsDown(UP_ARROW)){
+      this.vel.add(createVector(0, -vhor));
+      this.acc.add(createVector(0,-ahor));
+    }else if(keyIsDown(DOWN_ARROW)){
+  
+      this.vel.add(createVector(0,vhor));
+      this.acc.add(createVector(0,ahor));
+      
+    }
+  }
+  
+  this.move = function(){
+    this.arrows();
+  	this.vel.add(this.acc);
+  	this.loc.add(this.vel);
+  }
   
   this.stopMove = function(){
     this.canMove = !this.canMove;
@@ -105,7 +117,7 @@ function Enemy(x,y){
 	  if(collideRectRect(this.loc.x, this.loc.y,this.h,this.w, t.loc.x,t.loc.y,t.w,t.h ) ){
 	    	this.visable = false;
 	    	bullet.visable = false;
-	    	print("colid");
+	    	// print("colid");
 	  }
 	  
 	}
@@ -153,7 +165,7 @@ function Bullet(x,y){
   }
   this.reachTarget = function(t){
 	  if(collideRectRect(t.x,t.y,10,10,this.loc.x, this.loc.y,this.h,this.w)){
-	    	 print("bullet target aquired");
+	    	// print("bullet target aquired");
 	    	this.visable = false;
 	    	bulletTarget = createVector(-10,-10);
 	  }
@@ -203,6 +215,6 @@ function mousePressed(){
   bullet.visable = true;
 //   setTimeout(function (){
 //   character.canMove = !character.canMove;
-// }, 1000);
+// },1 * 1000);
   
 }
