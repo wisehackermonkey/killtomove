@@ -45,7 +45,9 @@ var bg;
 var font;
 var fontScore;
 
-var size;
+var enem2;
+
+var ex;
 
 var front_walk = [
   {'name':'player_walk01', 'frame':{'x':16*1, 'y': 0, 'width': 16, 'height': 16}},
@@ -67,6 +69,7 @@ var enemy_walk   = [
   {'name':'player_walk04', 'frame':{'x':64*4, 'y': 64*1, 'width': 64, 'height': 64}},
   {'name':'player_walk05', 'frame':{'x':64*5, 'y': 64*1, 'width': 64, 'height': 64}},
 ];
+
 function preload(){
   menu = loadImage("./img/menu2.png"); 
   bg = loadImage("./img/bg_2_3.png");
@@ -92,12 +95,15 @@ function setup() {
   
   textFont(font,23);
   bullet = new Bullet(-10,-10,90);
-  enemy = new Enemy(300,100);
- 
+  enemy = new Enemy(100,100);
+  enem2 = new Enemy(300,200);
+  
+  ex = new Expolsion(0,0);
+
   angleMode(DEGREES);
   ellipseMode(CENTER);
   rectMode(CENTER);
-  character = new Character(width/2, height/2);
+  character = new Character(width/2, height - height/4);
   bulletTarget = createVector(-10,-10);
   
 }
@@ -112,19 +118,29 @@ function draw() {
   bullet.shoot(bulletTarget);
   bullet.reachTarget(bulletTarget);
   bullet.move();
+  
   enemy.show();
   enemy.colid(character);
   enemy.colid(bullet);
-  // animation(enemy_walk, enemy.loc.x, enemy.loc.y);
+ 
+  enem2.show();
+  enem2.colid(character);
+  enem2.colid(bullet);
+  
   drawSprites();
+  ex.show();
+
   image(menu,0,0);
   fill(color("red"));
   textFont(font,23);
   text("Kill To Move",16,35);
   textFont(fontScore,27);
-  text(character.moves,507,43);
+  text("move:"+character.moves,507-25,43);
+  fill(color("maroon"));
+  var len = "Move: WASD, Mouse: Shoot";
+  text("Move: WASD, Mouse: Shoot",163,600-30);
   fill(color("white"));
-  print(`${mouseX},${mouseY}`);
+  // print(`${mouseX},${mouseY}`);
   
 
 }
@@ -138,13 +154,13 @@ function Character(x,y){
 	this.w = 30;
 	this.h = 20;
   this.canMove = true;
-	this.moves = 0;
+	this.moves = 30;
 	
 	this.show = function(){
 		if(this.visable){
 		  colorMode(HSL);
 		  fill(map(this.moves,0,200,0,120), 100, 50);
-		// 	ellipse(this.loc.x,this.loc.y+20, this.w,this.h);
+		  //ellipse(this.loc.x,this.loc.y+20, this.w,this.h);
 			
 			colorMode(RGB);
 			fill(255);
@@ -183,7 +199,6 @@ function Character(x,y){
   this.move = function(){
     
     if(this.moves >= 1){
-      
       this.arrows();
     }else{
       this.vel.mult(0);
@@ -205,6 +220,7 @@ function Enemy(x,y){
 	this.bullets = [];
 	this.visable = true;
 	this.hack = true;
+	
 	this.show = function(){
 	  if(this.visable){
   	 // rect(this.loc.x,this.loc.y, this.w,this.h);
@@ -212,17 +228,14 @@ function Enemy(x,y){
 	  }
 	}
 	this.colid = function(t){
-	  if(collideRectRect(this.loc.x, this.loc.y,this.h,this.w, t.loc.x,t.loc.y,t.w,t.h ) ){
-	    	this.visable = false;
-	    	bullet.visable = false;
-	    	// print("colid");
-	    	
-	  }
-	  if(this.visable === false && this.hack === true){
-	    this.hack = false
-	    character.moves = 200;
-	  }
-	  
+  	  if(collideRectRect(this.loc.x, this.loc.y,this.h,this.w, t.loc.x,t.loc.y,t.w,t.h ) ){
+  	    	// this.visable = false;
+  	    	bullet.visable = false;
+  	    	character.moves = 30;
+  	    	  	              ex.setLoc(this.loc);
+          ex.setSet();
+          this.loc  = createVector(random(100, width-100),random(100,height-100));
+  	  }
 	}
 	
 	this.shoot = function(){
@@ -248,7 +261,7 @@ function Bullet(x,y){
   this.angle = 0;
   this.debug = true;
   this.visable = true;
-  
+  this.isCollid = true;
   this.show = function(){
     if(this.visable){
       noStroke();
@@ -267,10 +280,12 @@ function Bullet(x,y){
     this.angle = a + 90;
   }
   this.reachTarget = function(t){
-	  if(collideRectRect(t.x,t.y,10,10,this.loc.x, this.loc.y,this.h,this.w)){
-	    	this.visable = false;
-	    	// bulletTarget = createVector(-10,-10);
-	  }
+  	  if(collideRectRect(t.x,t.y,10,10,this.loc.x, this.loc.y,this.h,this.w)){
+  	    	 this.visable = false;
+  	    	this.test = false;
+
+
+     }
 	}
   this.debugShow = function(){
     if(this.debug){
@@ -294,6 +309,7 @@ function Bullet(x,y){
     var steer = p5.Vector.sub(desired, this.vel);
     steer.limit(0.1);
     this.acc.add(steer);
+    
   }
   this.edgeDespawn = function(){
   	if(this.loc.y >= height){
@@ -319,4 +335,31 @@ function mousePressed(){
 //   character.canMove = !character.canMove;
 // },1 * 1000);
   
+}
+
+function Expolsion(x,y){
+  this.time = 0;
+  this.loc = createVector(x,y);
+  this.show = function(){
+    if(this.time >= 0){
+      this.time--;
+      var r = random(20,25);
+      fill(150,150,150,100);
+      ellipse(this.loc.x+random(-20,20),this.loc.y+random(-20,20), r,r);
+      fill(255,random(0,150),0,150);
+      ellipse(this.loc.x+random(-20,20),this.loc.y+random(-20,20), r,r);
+      fill(255,random(0,150),0,150);
+      ellipse(this.loc.x+random(-20,20),this.loc.y+random(-20,20), r,r);
+      fill(255,random(0,150),0,150);
+      ellipse(this.loc.x+random(-20,20),this.loc.y+random(-20,20), r,r);
+      fill(255,random(0,150),0,150);
+      ellipse(this.loc.x+random(-20,20),this.loc.y+random(-20,20), r,r);
+    }
+  }
+  this.setLoc = function(vector){
+    this.loc = vector;
+  }
+  this.setSet = function(){
+    this.time = 25;
+  }
 }
